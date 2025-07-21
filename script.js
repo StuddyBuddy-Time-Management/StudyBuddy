@@ -158,3 +158,29 @@ function loadTasks() {
 }
 
 loadTasks();
+const quotes = [
+  "You got this. Focus on one task at a time.",
+  "Small progress is still progress.",
+  "Don't give up. Great things take time.",
+  "You are capable of amazing things.",
+  "Stay disciplined. You'll thank yourself later.",
+  "Start now. The future is watching.",
+  "Be proud of how far you've come."
+];
+
+const quoteBox = document.getElementById("quote-box");
+
+function showQuote() {
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  quoteBox.textContent = randomQuote;
+  quoteBox.style.opacity = 1;
+
+  setTimeout(() => {
+    quoteBox.style.opacity = 0;
+  }, 7000); // stays for 7 seconds
+}
+
+setInterval(showQuote, 25000); // changes quote every 25 seconds
+
+// Start with the first quote immediately
+showQuote();
