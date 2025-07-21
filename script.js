@@ -184,3 +184,22 @@ setInterval(showQuote, 25000); // changes quote every 25 seconds
 
 // Start with the first quote immediately
 showQuote();
+const toggleBtn = document.getElementById('theme-toggle');
+
+// Load saved theme from localStorage
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-mode');
+  toggleBtn.textContent = '☀️ Light Mode';
+}
+
+toggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+
+  if (document.body.classList.contains('dark-mode')) {
+    toggleBtn.textContent = '☀️ Light Mode';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    toggleBtn.textContent = '🌙 Dark Mode';
+    localStorage.setItem('theme', 'light');
+  }
+});
