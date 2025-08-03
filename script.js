@@ -207,3 +207,46 @@ darkModeToggle.addEventListener('click', () => {
     darkModeToggle.textContent = '🌙 Dark Mode';
   }
 });
+
+// Offline banner logic
+window.addEventListener('load', () => {
+  function updateOnlineStatus() {
+    const banner = document.getElementById('offlineBanner');
+    if (navigator.onLine) {
+      banner.style.display = 'none';
+    } else {
+      banner.style.display = 'block';
+    }
+  }
+
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+
+  updateOnlineStatus(); // Call once when the page loads
+});
+
+// Offline/Online banners logic
+window.addEventListener('load', () => {
+  const offlineBanner = document.getElementById('offlineBanner');
+  const onlineBanner = document.getElementById('onlineBanner');
+
+  function updateOnlineStatus() {
+    if (navigator.onLine) {
+      offlineBanner.style.display = 'none';
+      onlineBanner.style.display = 'block';
+
+      // Hide the "online" banner after 3 seconds
+      setTimeout(() => {
+        onlineBanner.style.display = 'none';
+      }, 3000);
+    } else {
+      offlineBanner.style.display = 'block';
+      onlineBanner.style.display = 'none';
+    }
+  }
+
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+
+  updateOnlineStatus(); // Initial check
+});
