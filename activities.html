@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upcoming Activities — ICP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      color: #222;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      background: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px;
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .overdue {
+      background-color: #ffefef;
+    }
+
+    .today {
+      background-color: #eaffea;
+    }
+
+    .actions button {
+      background-color: #eee;
+      color: #333;
+      border: 1px solid #ccc;
+      padding: 5px 8px;
+      margin-left: 4px;
+      font-size: 12px;
+    }
+
+    .done .left {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Upcoming Activities</h1>
+
+    <input type="text" id="activityName" placeholder="Activity name">
+    <input type="date" id="activityDate">
+    <textarea id="activityNote" rows="2" placeholder="Optional note or location"></textarea>
+    <button onclick="addActivity()">Add Activity</button>
+
+    <ul id="activityList"></ul>
+  </div>
+
+  <script>
+    let activities = JSON.parse(localStorage.getItem('activities') || '[]');
+
+    function saveActivities() {
+      localStorage.setItem('activities', JSON.stringify(activities));
+    }
+
+    function renderActivities() {
+      const list = document.getElementById('activityList');
+      list.innerHTML = '';
+      const today = new Date().toISOString().split('T')[0];
+
+      activities
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .forEach(activity => {
+          const li = document.createElement('li');
+          li.classList.add('activity');
+
+          if (activity.done) li.classList.add('done');
+          if (!activity.done && activity.date < today) li.classList.add('overdue');
+          if (activity.date === today) li.classList.add('today');
+
+          const left = document.createElement('div');
+          left.classList.add('left');
+          left.innerHTML = `<strong>${activity.name}</strong><br><span class="meta">${activity.date}${activity.note ? ' • ' + activity.note : ''}</span>`;
+
+          const actions = document.createElement('div');
+          actions.classList.add('actions');
+
+          const doneBtn = document.createElement('button');
+          doneBtn.textContent = activity.done ? '↺' : '✓';
+          doneBtn.onclick = () => {
+            activity.done = !activity.done;
+            saveActivities();
+            renderActivities();
+          };
+
+          const delBtn = document.createElement('button');
+          delBtn.textContent = '🗑';
+          delBtn.onclick = () => {
+            if (confirm('Delete this activity?')) {
+              activities = activities.filter(a => a !== activity);
+              saveActivities();
+              renderActivities();
+            }
+          };
+
+          actions.appendChild(doneBtn);
+          actions.appendChild(delBtn);
+          li.appendChild(left);
+          li.appendChild(actions);
+          list.appendChild(li);
+        });
+    }
+
+    function addActivity() {
+      const name = document.getElementById('activityName').value.trim();
+      const date = document.getElementById('activityDate').value;
+      const note = document.getElementById('activityNote').value.trim();
+
+      if (name && date) {
+        activities.push({ name, date, note, done: false });
+        saveActivities();
+        renderActivities();
+        document.getElementById('activityName').value = '';
+        document.getElementById('activityDate').value = '';
+        document.getElementById('activityNote').value = '';
+      }
+    }
+
+    renderActivities();
+  </script>
+
+ <!-- Offline Banner -->
+<div id="offlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; background:red; color:white; padding:10px; text-align:center; font-weight:bold; z-index:9999;">
+  You are currently offline
+</div>
+
+<!-- Online Banner -->
+<div id="onlineBanner" style="display:none; position:fixed; top:0; left:0; right:0; background:green; color:white; padding:10px; text-align:center; font-weight:bold; z-index:9999;">
+  You're back online
+</div>
+
+</body>
+</html>
